@@ -27,6 +27,8 @@ type Icinga2APIHost struct {
 	Flapping bool `json:"flapping"`
 	Acknowledgement float32 `json:"acknowledgement"`
 	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
+	ActionURL string `json:"action_url"`
+	NotesURL string `json:"notes_url"`
 }
 
 type Icinga2APIService struct {
@@ -41,7 +43,8 @@ type Icinga2APIService struct {
 	Flapping bool `json:"flapping"`
 	Acknowledgement float32 `json:"acknowledgement"`
 	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
-
+	ActionURL string `json:"action_url"`
+	NotesURL string `json:"notes_url"`
 }
 
 func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
@@ -67,6 +70,11 @@ func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
 		}
 		if apiHost.Acknowledgement > 0 {
 			host.Acknowledged = true
+		}
+		if len(apiHost.ActionURL) > 0 {
+			host.URL = apiHost.ActionURL
+		} else if len(apiHost.NotesURL) > 0 {
+			host.URL = apiHost.NotesURL
 		}
 		v = append(v, host)
 	}
@@ -100,6 +108,12 @@ func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 		if apiService.Acknowledgement > 0 {
 			service.Acknowledged = true
 		}
+		if len(apiService.ActionURL) > 0 {
+			service.URL = apiService.ActionURL
+		} else if len(apiService.NotesURL) > 0 {
+			service.URL = apiService.NotesURL
+		}
+
 		v = append(v, service)
 	}
 	return v
