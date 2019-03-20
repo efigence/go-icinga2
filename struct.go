@@ -23,12 +23,14 @@ type Icinga2APIHost struct {
 	StateType float32 `json:"last_state_type"`
 	LastCheck float64 `json:"last_check"`
 	LastStateChange float64 `json:"last_state_change"`
+	LastHardStateChange float64 `json:"last_hard_state_change"`
 	DowntimeDepth float32 `json:"downtime_depth"`
 	Flapping bool `json:"flapping"`
 	Acknowledgement float32 `json:"acknowledgement"`
 	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
 	ActionURL string `json:"action_url"`
 	NotesURL string `json:"notes_url"`
+	CheckResult Icinga2APICheckResult `json:"last_check_result"`
 }
 
 type Icinga2APIService struct {
@@ -39,12 +41,19 @@ type Icinga2APIService struct {
 	StateType float32 `json:"last_state_type"`
 	LastCheck float64 `json:"last_check"`
 	LastStateChange float64 `json:"last_state_change"`
+	LastHardStateChange float64 `json:"last_hard_state_change"`
 	DowntimeDepth float32 `json:"downtime_depth"`
 	Flapping bool `json:"flapping"`
 	Acknowledgement float32 `json:"acknowledgement"`
 	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
 	ActionURL string `json:"action_url"`
 	NotesURL string `json:"notes_url"`
+	CheckResult Icinga2APICheckResult `json:"last_check_result"`
+}
+
+type Icinga2APICheckResult struct {
+	CheckFrom string `json:"check_source"`
+	Message string `json:"output"`
 }
 
 func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
@@ -61,7 +70,9 @@ func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
 		host.State =  uint8(apiHost.State) + 1
 		host.Timestamp = unixTsToTs(apiHost.LastCheck)
 		host.LastStateChange = unixTsToTs(apiHost.LastStateChange)
+		host.LastHardStateChange = unixTsToTs(apiHost.LastHardStateChange)
 		host.Flapping = apiHost.Flapping
+		host.CheckMessage = apiHost.CheckResult.Message
 		if apiHost.StateType == 1.0 {
 			host.StateHard = true
 		}
@@ -99,6 +110,7 @@ func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 		service.Timestamp = unixTsToTs(apiService.LastCheck)
 		service.LastStateChange = unixTsToTs(apiService.LastStateChange)
 		service.Flapping = apiService.Flapping
+		service.CheckMessage = apiService.CheckResult.Message
 		if apiService.StateType == 1.0 {
 			service.StateHard = true
 		}
