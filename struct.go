@@ -19,8 +19,11 @@ type Icinga2APIObject struct {
 type Icinga2APIHost struct {
 	Name string `json:"name"`
 	Active bool `json:"active"`
-	State float32 `json:"last_state"`
-	StateType float32 `json:"last_state_type"`
+	State float32 `json:"state"`
+	StateType float32 `json:"state_type"`
+	// TODO find the difference between the two
+	LastState float32 `json:"last_state"`
+	LastStateType float32 `json:"last_state_type"`
 	LastCheck float64 `json:"last_check"`
 	LastStateChange float64 `json:"last_state_change"`
 	LastHardStateChange float64 `json:"last_hard_state_change"`
@@ -37,8 +40,11 @@ type Icinga2APIService struct {
 	Host string `json:"host_name"`
 	Service string `json:"name"`
 	Active bool `json:"active"`
-	State float32 `json:"last_state"`
-	StateType float32 `json:"last_state_type"`
+	State float32 `json:"state"`
+	StateType float32 `json:"state_type"`
+	// TODO find the difference between the two
+	LastState float32 `json:"last_state"`
+	LastStateType float32 `json:"last_state_type"`
 	LastCheck float64 `json:"last_check"`
 	LastStateChange float64 `json:"last_state_change"`
 	LastHardStateChange float64 `json:"last_hard_state_change"`
