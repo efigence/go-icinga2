@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type API struct {
@@ -26,9 +27,15 @@ func New(u,user, pass string) (ao *API, err error) {
 	return &a, nil
 }
 
+func httpClient() *http.Client {
+	return &http.Client{
+		Timeout: time.Second * 31,
+	}
+
+}
 
 func (a *API) GetHosts() (m []monitoring.Host, err error) {
-	client := &http.Client{}
+	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Hosts" , nil)
 	if err != nil {return m, err}
 	if len(a.User) > 0 {
@@ -47,7 +54,7 @@ func (a *API) GetHosts() (m []monitoring.Host, err error) {
 }
 
 func (a *API) GetServices() (m []monitoring.Service, err error) {
-	client := &http.Client{}
+	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Services" , nil)
 	if err != nil {return m, err}
 	if len(a.User) > 0 {
