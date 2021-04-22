@@ -2,13 +2,27 @@ package icinga2
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/efigence/go-monitoring"
+	"strings"
 	"time"
 )
 
 type Icinga2APIResponse struct {
 	Results []Icinga2APIObject
 }
+
+type Icinga2StatusResponseOk struct {
+	Results []Icinga2StatusPart
+}
+
+type Icinga2StatusPart struct {
+	Code float64 `json:"code"` // yes, api returns floats as status code
+	Error float64 `json:"error"` // yes, api returns floats as error code
+	Status string `json:"status"`
+	Name string `json:"name"`
+}
+
 
 type Icinga2APIObject struct {
 	Attrs json.RawMessage
@@ -139,6 +153,19 @@ func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 		v = append(v, service)
 	}
 	return v
+}
+
+func (i *Icinga2StatusResponseOk)GetDowntimeList() []string {
+	objects := make([]string,0)
+	for _, obj := range i.Results {
+		if int(obj.Code) == 200 {
+			parts := strings.SplitN(obj.Name,"!",2)
+			objects = append(objects,parts[0])
+		} else {
+			fmt.Printf("%+v\n", obj)
+		}
+	}
+	return objects
 }
 
 

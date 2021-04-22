@@ -1,0 +1,21 @@
+# curl -u root:icinga -H 'Accept: application/json'
+# -X POST 'https://localhost:5665/v1/actions/schedule-downtime'
+# -d '{ "type": "Service", "filter": "service.name==\"ping4\"", "start_time": 1446388806, "end_time": 1446389806, "duration": 1000, "author": "icingaadmin", "comment": "IPv4 network maintenance", "pretty": true }'
+POST {{icinga2_url}}/v1/actions/schedule-downtime
+Accept: application/json
+Authorization: Basic {{icinga2_user}} {{icinga2_pass}}
+Accept: application/json
+Content-Type: application/x-www-form-urlencoded
+
+{ "type": "Host",
+  "filter": "match(\"{{icinga2_test_hostnames}}\", host.name)",
+  "start_time": 1446388806,
+  "end_time": 1446389806,
+  "duration": 1000,
+  "author": "icingaadmin",
+  "comment": "test downtime",
+  "pretty": true
+  }
+
+###
+

@@ -1,0 +1,10 @@
+{
+  "results": [
+    {
+      "code": 200.0,
+      "legacy_id": 25.0,
+      "name": "t1-mon1!478e8772-8b85-4c78-aef7-7c2e16f1a119",
+      "status": "Successfully scheduled downtime 't1-mon1!478e8772-8b85-4c78-aef7-7c2e16f1a119' for object 'd1-mon1'."
+    }
+  ]
+}

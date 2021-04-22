@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 var TestUser = "testuser"
@@ -19,14 +20,23 @@ func (t testLogger) Printf(format string, v ...interface{}) {
 
 }
 
-func testServer(t *testing.T, path string, filename string) *httptest.Server {
+type testServ struct {
+	*httptest.Server
+	reqBody string
+}
+
+func testServer(t *testing.T, path string, filename string) *testServ {
+	var tts = &testServ{}
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		f, err := ioutil.ReadFile("testdata/" + filename)
 		assert.Equal(t,path,r.URL.Path)
 		assert.Nil(t,err)
+		b,_ := ioutil.ReadAll(r.Body)
+		tts.reqBody = string(b)
 		w.Write(f)
 	}))
-	return ts
+	tts.Server = ts
+	return tts
 }
 
 func TestAPI_GetHosts(t *testing.T) {
@@ -78,6 +88,50 @@ func TestAPI_GetServices(t *testing.T) {
 		assert.False(t,v["t1-host1"]["ELASTICSEARCH"].Acknowledged)
 		assert.Equal(t,monitoring.StatusOk,int(v["t1-host1"]["ELASTICSEARCH"].State))
 	})
+}
 
+func TestAPI_ScheduleHostDowntime(t *testing.T) {
+	log = testLogger{}
+	ts := testServer(t, "/v1/actions/schedule-downtime", "v1.actions.schedule-downtime.json")
+	Api, err1 := New(ts.URL, TestUser, TestPass)
+	hosts, err2 := Api.ScheduleHostDowntime("t1-host1", Downtime{
+		Flexible:      false,
+		Start:         time.Now(),
+		End:           time.Now().Add(time.Hour),
+		Duration:      0,
+		NoAllServices: false,
+		Author: t.Name(),
+		Comment: "c:" + t.Name(),
+	})
+	t.Run("parse input", func(t *testing.T) {
+		assert.Nil(t, err1)
+		assert.Nil(t, err2)
+	})
+	t.Run("request json", func(tt *testing.T) {
+		assert.Contains(tt, ts.reqBody,`"filter":"match(\"t1-host1\", host.name)"`)
+		assert.Contains(tt, ts.reqBody,`"author":"` + t.Name() + `"`)
+		assert.Contains(tt, ts.reqBody,`"comment":"c:` + t.Name() + `"`)
+	})
+	t.Run("host count", func(t *testing.T) {
+		assert.Len(t,hosts,2)
+	})
 
+}
+
+func TestAPI_ScheduleHostDowntime_NoHost(t *testing.T) {
+	log = testLogger{}
+	ts := testServer(t, "/v1/actions/schedule-downtime", "error.no-objects-found.json")
+	Api, err1 := New(ts.URL, TestUser, TestPass)
+	_, err2 := Api.ScheduleHostDowntime("t1-host1", Downtime{
+		Flexible:      false,
+		Start:         time.Now(),
+		End:           time.Now().Add(time.Hour),
+		Duration:      0,
+		NoAllServices: false,
+
+	})
+	t.Run("parse input", func(t *testing.T) {
+		assert.Nil(t, err1)
+		assert.Error(t, err2)
+	})
 }

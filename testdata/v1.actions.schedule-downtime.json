@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "code": 200.0,
+      "legacy_id": 26.0,
+      "name": "t1-mon1!2316b99e-c70c-41ab-aaca-684fab53fa24",
+      "status": "Successfully scheduled downtime 't1-mon1!2316b99e-c70c-41ab-aaca-684fab53fa24' for object 't1-mon1'."
+    },
+    {
+      "code": 200.0,
+      "legacy_id": 28.0,
+      "name": "t1-mon2!0117c82e-6b80-4997-8439-bd11bc5d7ee2",
+      "status": "Successfully scheduled downtime 't1-mon2!0117c82e-6b80-4997-8439-bd11bc5d7ee2' for object 't1-mon2'."
+    }
+  ]
+}
