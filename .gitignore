@@ -52,5 +52,5 @@ main
 
 
 # local test data
-
+*.private.env.json
 t-data/*local

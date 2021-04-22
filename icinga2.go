@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var client = httpClient()
+
 type API struct {
 	URL *url.URL
 	User string
@@ -70,5 +72,5 @@ func (a *API) GetServices() (m []monitoring.Service, err error) {
 		return m, fmt.Errorf("error decoding json: %s | %s", err, string(body))
 	}
 	return i.GetServices(), nil
-
 }
+

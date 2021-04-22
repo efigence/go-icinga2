@@ -1,0 +1,12 @@
+GET {{icinga2_url}}/v1/objects/services?host={{icinga2_test_hostname}}
+Accept: application/json
+Authorization: Basic {{icinga2_user}} {{icinga2_pass}}
+
+
+###
+GET {{icinga2_url}}/v1/objects/hosts?host={{icinga2_test_hostname}}
+Accept: application/json
+Authorization: Basic {{icinga2_user}} {{icinga2_pass}}
+
+
+###

@@ -1,0 +1,138 @@
+{
+  "results": [
+    {
+      "attrs": {
+        "__name": "t1-host1",
+        "acknowledgement": 0,
+        "acknowledgement_expiry": 0,
+        "action_url": "https://grafana.example.com/dashboard/db/node?var-server=t1-host1",
+        "active": true,
+        "address": "1.2.3.4",
+        "address6": "",
+        "check_attempt": 1,
+        "check_command": "hostalive",
+        "check_interval": 60,
+        "check_period": "",
+        "check_timeout": null,
+        "command_endpoint": "",
+        "display_name": "t1-host1",
+        "downtime_depth": 0,
+        "enable_active_checks": true,
+        "enable_event_handler": true,
+        "enable_flapping": false,
+        "enable_notifications": true,
+        "enable_passive_checks": true,
+        "enable_perfdata": true,
+        "event_command": "",
+        "flapping": false,
+        "flapping_current": 0,
+        "flapping_last_change": 0,
+        "flapping_threshold": 0,
+        "flapping_threshold_high": 30,
+        "flapping_threshold_low": 25,
+        "force_next_check": false,
+        "force_next_notification": false,
+        "groups": [
+          "debian-servers"
+        ],
+        "ha_mode": 0,
+        "handled": false,
+        "icon_image": "",
+        "icon_image_alt": "",
+        "last_check": 1619106496.380587,
+        "last_check_result": {
+          "active": true,
+          "check_source": "t1-z2.example.com",
+          "command": [
+            "/usr/lib/nagios/plugins/check_ping",
+            "-H",
+            "1.2.3.4",
+            "-c",
+            "5000,100%",
+            "-w",
+            "3000,80%"
+          ],
+          "execution_end": 1619106496.380441,
+          "execution_start": 1619106492.330856,
+          "exit_status": 0,
+          "output": "PING OK - Packet loss = 0%, RTA = 0.86 ms",
+          "performance_data": [
+            "rta=0.855000ms;3000.000000;5000.000000;0.000000",
+            "pl=0%;80;100;0"
+          ],
+          "schedule_end": 1619106496.380587,
+          "schedule_start": 1619106492.330252,
+          "state": 0,
+          "ttl": 0,
+          "type": "CheckResult",
+          "vars_after": {
+            "attempt": 1,
+            "reachable": true,
+            "state": 0,
+            "state_type": 1
+          },
+          "vars_before": {
+            "attempt": 1,
+            "reachable": true,
+            "state": 0,
+            "state_type": 1
+          }
+        },
+        "last_hard_state": 0,
+        "last_hard_state_change": 1612949164.526412,
+        "last_reachable": true,
+        "last_state": 0,
+        "last_state_change": 1612949164.526412,
+        "last_state_down": 1612949103.491086,
+        "last_state_type": 1,
+        "last_state_unreachable": 0,
+        "last_state_up": 1619106496.382765,
+        "max_check_attempts": 3,
+        "name": "t1-host1",
+        "next_check": 1619106554.152776,
+        "notes": "",
+        "notes_url": "http://wiki/doku.php/server::notes",
+        "original_attributes": null,
+        "package": "_etc",
+        "paused": true,
+        "previous_state_change": 1612949164.526412,
+        "problem": false,
+        "retry_interval": 30,
+        "severity": 8,
+        "source_location": {
+          "first_column": 1,
+          "first_line": 11,
+          "last_column": 33,
+          "last_line": 11,
+          "path": "/etc/icinga2/hosts/t1-host1.conf"
+        },
+        "state": 0,
+        "state_type": 1,
+        "templates": [
+          "t1-host1",
+          "generic-host"
+        ],
+        "type": "Host",
+        "vars": {
+          "internal_accounting_project": "dc1-efigence",
+          "internal_notification_groups": [
+            "chat-admin"
+          ],
+          "os": "Linux",
+          "osfamily": "Debian",
+          "parent_host": "parent1",
+          "service_template": "generic",
+          "site": "dc1",
+          "sla": ""
+        },
+        "version": 0,
+        "volatile": false,
+        "zone": ""
+      },
+      "joins": {},
+      "meta": {},
+      "name": "t1-host1",
+      "type": "Host"
+    }
+  ]
+}

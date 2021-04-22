@@ -18,6 +18,7 @@ type Icinga2APIObject struct {
 
 type Icinga2APIHost struct {
 	Name string `json:"name"`
+	DisplayName string `json:"display_name"`
 	Active bool `json:"active"`
 	State float32 `json:"state"`
 	StateType float32 `json:"state_type"`
@@ -39,6 +40,7 @@ type Icinga2APIHost struct {
 type Icinga2APIService struct {
 	Host string `json:"host_name"`
 	Service string `json:"name"`
+	DisplayName string `json:"display_name"`
 	Active bool `json:"active"`
 	State float32 `json:"state"`
 	StateType float32 `json:"state_type"`
@@ -79,6 +81,7 @@ func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
 		host.LastHardStateChange = unixTsToTs(apiHost.LastHardStateChange)
 		host.Flapping = apiHost.Flapping
 		host.CheckMessage = apiHost.CheckResult.Message
+		host.DisplayName = apiHost.DisplayName
 		if apiHost.StateType == 1.0 {
 			host.StateHard = true
 		}
@@ -117,6 +120,7 @@ func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 		service.LastStateChange = unixTsToTs(apiService.LastStateChange)
 		service.Flapping = apiService.Flapping
 		service.CheckMessage = apiService.CheckResult.Message
+		service.DisplayName = apiService.DisplayName
 		if apiService.StateType == 1.0 {
 			service.StateHard = true
 		}
