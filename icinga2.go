@@ -19,9 +19,9 @@ type API struct {
 	Pass string
 }
 
-func New(u,user, pass string) (ao *API, err error) {
+func New(apiURL,user, pass string) (ao *API, err error) {
 	var a API
-	a.URL, err = url.Parse(u)
+	a.URL, err = url.Parse(apiURL)
 	if err != nil {
 		return ao, fmt.Errorf("error parsing url: %s", err)
 	}
@@ -38,9 +38,18 @@ func httpClient() *http.Client {
 }
 
 func (a *API) GetHosts() (m []monitoring.Host, err error) {
+	return a.GetHostsByFilter("")
+}
+
+func (a *API) GetHostsByFilter(filter string) (m []monitoring.Host, err error) {
 	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Hosts" , nil)
 	if err != nil {return m, err}
+	if filter != "" {
+		q := req.URL.Query()
+		q.Add("filter", filter)
+		req.URL.RawQuery = q.Encode()
+	}
 	if len(a.User) > 0 {
 		req.SetBasicAuth(a.User, a.Pass)
 	}
@@ -57,9 +66,18 @@ func (a *API) GetHosts() (m []monitoring.Host, err error) {
 }
 
 func (a *API) GetServices() (m []monitoring.Service, err error) {
+	return a.GetServicesByFilter("")
+}
+
+func (a *API) GetServicesByFilter(filter string) (m []monitoring.Service, err error) {
 	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Services" , nil)
 	if err != nil {return m, err}
+	if filter != "" {
+		q := req.URL.Query()
+		q.Add("filter", filter)
+		req.URL.RawQuery = q.Encode()
+	}
 	if len(a.User) > 0 {
 		req.SetBasicAuth(a.User, a.Pass)
 	}
@@ -74,6 +92,8 @@ func (a *API) GetServices() (m []monitoring.Service, err error) {
 	}
 	return i.GetServices(), nil
 }
+
+
 
 type Downtime struct {
 	Flexible bool

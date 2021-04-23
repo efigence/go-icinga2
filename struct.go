@@ -17,12 +17,11 @@ type Icinga2StatusResponseOk struct {
 }
 
 type Icinga2StatusPart struct {
-	Code float64 `json:"code"` // yes, api returns floats as status code
-	Error float64 `json:"error"` // yes, api returns floats as error code
-	Status string `json:"status"`
-	Name string `json:"name"`
+	Code   float64 `json:"code"`  // yes, api returns floats as status code
+	Error  float64 `json:"error"` // yes, api returns floats as error code
+	Status string  `json:"status"`
+	Name   string  `json:"name"`
 }
-
 
 type Icinga2APIObject struct {
 	Attrs json.RawMessage
@@ -31,65 +30,67 @@ type Icinga2APIObject struct {
 }
 
 type Icinga2APIHost struct {
-	Name string `json:"name"`
-	DisplayName string `json:"display_name"`
-	Active bool `json:"active"`
-	State float32 `json:"state"`
-	StateType float32 `json:"state_type"`
+	Name        string  `json:"name"`
+	DisplayName string  `json:"display_name"`
+	Active      bool    `json:"active"`
+	State       float32 `json:"state"`
+	StateType   float32 `json:"state_type"`
 	// TODO find the difference between the two
-	LastState float32 `json:"last_state"`
-	LastStateType float32 `json:"last_state_type"`
-	LastCheck float64 `json:"last_check"`
-	LastStateChange float64 `json:"last_state_change"`
-	LastHardStateChange float64 `json:"last_hard_state_change"`
-	DowntimeDepth float32 `json:"downtime_depth"`
-	Flapping bool `json:"flapping"`
-	Acknowledgement float32 `json:"acknowledgement"`
-	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
-	ActionURL string `json:"action_url"`
-	NotesURL string `json:"notes_url"`
-	CheckResult Icinga2APICheckResult `json:"last_check_result"`
+	LastState             float32               `json:"last_state"`
+	LastStateType         float32               `json:"last_state_type"`
+	LastCheck             float64               `json:"last_check"`
+	LastStateChange       float64               `json:"last_state_change"`
+	LastHardStateChange   float64               `json:"last_hard_state_change"`
+	DowntimeDepth         float32               `json:"downtime_depth"`
+	Flapping              bool                  `json:"flapping"`
+	Acknowledgement       float32               `json:"acknowledgement"`
+	AcknowledgementExpiry float64               `json:"acknowledgement_expiry"`
+	ActionURL             string                `json:"action_url"`
+	NotesURL              string                `json:"notes_url"`
+	CheckResult           Icinga2APICheckResult `json:"last_check_result"`
 }
 
 type Icinga2APIService struct {
-	Host string `json:"host_name"`
-	Service string `json:"name"`
-	DisplayName string `json:"display_name"`
-	Active bool `json:"active"`
-	State float32 `json:"state"`
-	StateType float32 `json:"state_type"`
+	Host        string  `json:"host_name"`
+	Service     string  `json:"name"`
+	DisplayName string  `json:"display_name"`
+	Active      bool    `json:"active"`
+	State       float32 `json:"state"`
+	StateType   float32 `json:"state_type"`
 	// TODO find the difference between the two
-	LastState float32 `json:"last_state"`
-	LastStateType float32 `json:"last_state_type"`
-	LastCheck float64 `json:"last_check"`
-	LastStateChange float64 `json:"last_state_change"`
-	LastHardStateChange float64 `json:"last_hard_state_change"`
-	DowntimeDepth float32 `json:"downtime_depth"`
-	Flapping bool `json:"flapping"`
-	Acknowledgement float32 `json:"acknowledgement"`
-	AcknowledgementExpiry float64 `json:"acknowledgement_expiry"`
-	ActionURL string `json:"action_url"`
-	NotesURL string `json:"notes_url"`
-	CheckResult Icinga2APICheckResult `json:"last_check_result"`
+	LastState             float32               `json:"last_state"`
+	LastStateType         float32               `json:"last_state_type"`
+	LastCheck             float64               `json:"last_check"`
+	LastStateChange       float64               `json:"last_state_change"`
+	LastHardStateChange   float64               `json:"last_hard_state_change"`
+	DowntimeDepth         float32               `json:"downtime_depth"`
+	Flapping              bool                  `json:"flapping"`
+	Acknowledgement       float32               `json:"acknowledgement"`
+	AcknowledgementExpiry float64               `json:"acknowledgement_expiry"`
+	ActionURL             string                `json:"action_url"`
+	NotesURL              string                `json:"notes_url"`
+	CheckResult           Icinga2APICheckResult `json:"last_check_result"`
 }
 
 type Icinga2APICheckResult struct {
 	CheckFrom string `json:"check_source"`
-	Message string `json:"output"`
+	Message   string `json:"output"`
 }
 
 func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
 	for _, obj := range i.Results {
-		if obj.Type != "Host" {	continue }
+		if obj.Type != "Host" {
+			continue
+		}
 		var apiHost Icinga2APIHost
-		err := json.Unmarshal(obj.Attrs,&apiHost)
+		err := json.Unmarshal(obj.Attrs, &apiHost)
 		if err != nil {
-			log.Printf("error unmarshalling host %s: %s | %s",obj.Name,err,string(obj.Attrs))
+			log.Printf("error unmarshalling host %s: %s | %s", obj.Name, err, string(obj.Attrs))
 			continue
 		}
 
-		host := monitoring.Host{ Host: apiHost.Name }
-		host.State =  uint8(apiHost.State) + 1
+		host := monitoring.Host{Host: apiHost.Name}
+		host.State = uint8(apiHost.State) + 1
 		host.Timestamp = unixTsToTs(apiHost.LastCheck)
 		host.LastStateChange = unixTsToTs(apiHost.LastStateChange)
 		host.LastHardStateChange = unixTsToTs(apiHost.LastHardStateChange)
@@ -117,19 +118,21 @@ func (i *Icinga2APIResponse) GetHosts() (v []monitoring.Host) {
 
 func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 	for _, obj := range i.Results {
-		if obj.Type != "Service" {	continue }
+		if obj.Type != "Service" {
+			continue
+		}
 		var apiService Icinga2APIService
-		err := json.Unmarshal(obj.Attrs,&apiService)
+		err := json.Unmarshal(obj.Attrs, &apiService)
 		if err != nil {
-			log.Printf("error unmarshalling host %s: %s | %s",obj.Name,err,string(obj.Attrs))
+			log.Printf("error unmarshalling host %s: %s | %s", obj.Name, err, string(obj.Attrs))
 			continue
 		}
 
 		service := monitoring.Service{
-			Host: apiService.Host,
+			Host:    apiService.Host,
 			Service: apiService.Service,
 		}
-		service.State =  uint8(apiService.State) + 1
+		service.State = uint8(apiService.State) + 1
 		service.Timestamp = unixTsToTs(apiService.LastCheck)
 		service.LastStateChange = unixTsToTs(apiService.LastStateChange)
 		service.Flapping = apiService.Flapping
@@ -155,12 +158,12 @@ func (i *Icinga2APIResponse) GetServices() (v []monitoring.Service) {
 	return v
 }
 
-func (i *Icinga2StatusResponseOk)GetDowntimeList() []string {
-	objects := make([]string,0)
+func (i *Icinga2StatusResponseOk) GetDowntimeList() []string {
+	objects := make([]string, 0)
 	for _, obj := range i.Results {
 		if int(obj.Code) == 200 {
-			parts := strings.SplitN(obj.Name,"!",2)
-			objects = append(objects,parts[0])
+			parts := strings.SplitN(obj.Name, "!", 2)
+			objects = append(objects, parts[0])
 		} else {
 			fmt.Printf("%+v\n", obj)
 		}
@@ -168,14 +171,15 @@ func (i *Icinga2StatusResponseOk)GetDowntimeList() []string {
 	return objects
 }
 
-
-func unixTsToTs (t float64) time.Time {
+func unixTsToTs(t float64) time.Time {
 	tsSec := int64(t)
 	tsNs := int64((t - float64(tsSec)) * 1000000000)
-	if tsNs < 0  {tsNs = 0}
-	return time.Unix(tsSec,tsNs)
+	if tsNs < 0 {
+		tsNs = 0
+	}
+	return time.Unix(tsSec, tsNs)
 }
+
 //func (i *Icinga2APIHostResponse)ToHost() *monitoring.Host {
 //	var m monitoring.Host
 //}
-
