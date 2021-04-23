@@ -130,8 +130,13 @@ type downtimeRequest struct {
 	AllServices bool `json:"all_services,omitempty"`
 }
 
-
+// ScheduleHostDowntime schedules downtime on hostname by the match() filter of Icinga2 (so globs and such work)
 func (a *API) ScheduleHostDowntime(host string,downtime Downtime) (downtimedHosts []string, err error) {
+	return a.ScheduleHostDowntimeByFilter(`match("` + host + `", host.name)`,downtime)
+}
+
+// ScheduleHostDowntime schedules downtime on hostname by the icinga filters
+func (a *API) ScheduleHostDowntimeByFilter(filter string, downtime Downtime) (downtimedHosts []string, err error) {
 	err = downtime.Validate()
 	if err != nil {
 		return downtimedHosts,err
@@ -140,7 +145,7 @@ func (a *API) ScheduleHostDowntime(host string,downtime Downtime) (downtimedHost
 	reqData := downtimeRequest{
 		Type: "Host",
 		// TODO wildcard protection
-		Filter: `match("` + host + `", host.name)`,
+		Filter: filter,
 		StartTime: int(downtime.Start.UTC().Unix()),
 		EndTime: int(downtime.End.UTC().Unix()),
 		Author: downtime.Author,
@@ -171,8 +176,7 @@ func (a *API) ScheduleHostDowntime(host string,downtime Downtime) (downtimedHost
 		if err != nil {
 			return downtimedHosts,fmt.Errorf("error decoding json: %s | %s", err, string(body))
 		}
-		return downtimedHosts,fmt.Errorf("error while setting downtime: zero hosts returned: [%s]", string(body))
+		return downtimedHosts,fmt.Errorf("error while setting downtime for filter [%s]: zero hosts returned: [%s]",filter, string(body))
 	}
 	return i.GetDowntimeList(),nil
 }
-
