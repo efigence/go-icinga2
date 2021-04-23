@@ -171,7 +171,7 @@ func (a *API) ScheduleHostDowntime(host string,downtime Downtime) (downtimedHost
 		if err != nil {
 			return downtimedHosts,fmt.Errorf("error decoding json: %s | %s", err, string(body))
 		}
-		return downtimedHosts,fmt.Errorf("error while setting downtime: [%d] %s", int(e.Error), e.Status)
+		return downtimedHosts,fmt.Errorf("error while setting downtime: zero hosts returned: [%s]", string(body))
 	}
 	return i.GetDowntimeList(),nil
 }
