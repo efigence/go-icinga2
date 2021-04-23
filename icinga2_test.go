@@ -32,6 +32,10 @@ func testServer(t *testing.T, path string, filename string) *testServ {
 		f, err := ioutil.ReadFile("testdata/" + filename)
 		assert.Equal(t, path, r.URL.Path)
 		assert.Nil(t, err)
+		assert.Equal(t,"application/json",r.Header.Get("accept"),"accept header")
+		if r.Method == http.MethodPost {
+			assert.Equal(t, "application/json", r.Header.Get("content-type"),"content-type header")
+		}
 		b, _ := ioutil.ReadAll(r.Body)
 		tts.reqBody = string(b)
 		w.Write(f)

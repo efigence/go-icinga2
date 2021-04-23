@@ -45,6 +45,7 @@ func (a *API) GetHostsByFilter(filter string) (m []monitoring.Host, err error) {
 	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Hosts" , nil)
 	if err != nil {return m, err}
+	req.Header.Set("Accept","application/json")
 	if filter != "" {
 		q := req.URL.Query()
 		q.Add("filter", filter)
@@ -73,6 +74,7 @@ func (a *API) GetServicesByFilter(filter string) (m []monitoring.Service, err er
 	client := httpClient()
 	req, err := http.NewRequest("GET", a.URL.String() + "/v1/objects/Services" , nil)
 	if err != nil {return m, err}
+	req.Header.Set("Accept","application/json")
 	if filter != "" {
 		q := req.URL.Query()
 		q.Add("filter", filter)
@@ -149,6 +151,8 @@ func (a *API) ScheduleHostDowntime(host string,downtime Downtime) (downtimedHost
 	jsonData, err := json.Marshal(reqData)
 	req, err := http.NewRequest("POST", a.URL.String() + "/v1/actions/schedule-downtime" , bytes.NewBuffer(jsonData))
 	if err != nil {return downtimedHosts,err}
+	req.Header.Set("Accept","application/json")
+	req.Header.Set("Content-Type","application/json")
 	if len(a.User) > 0 {
 		req.SetBasicAuth(a.User, a.Pass)
 	}
