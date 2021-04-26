@@ -57,11 +57,11 @@ func TestProxy_GetHosts_Dedup(t *testing.T) {
 	}
 	t.Run("duped host data", func(t *testing.T) {
 		assert.Equal(t, monitoring.HostUp, int(v["t1-host1_s1"].State))
-		assert.Equal(t, "t1-host1", v["t1-host1_s1"].DisplayName)
+		assert.Equal(t, "t1-host1", v["t1-host1_s1"].DisplayName,"dedup should not change display name")
 	})
 	t.Run("single host data", func(t *testing.T) {
 		assert.Equal(t, monitoring.HostUp, int(v["t2-lb1"].State))
-		assert.Equal(t, "t2-lb1", v["t2-lb1"].DisplayName)
+		assert.Equal(t, "t2-lb1", v["t2-lb1"].DisplayName,)
 	})
 }
 
@@ -139,6 +139,7 @@ func TestProxy_ScheduleHostDowntime(t *testing.T) {
 	ts := testServer(t, "/v1/actions/schedule-downtime", "v1.actions.schedule-downtime.json")
 	Api, err1 := NewProxy(map[string]Icinga2ServerConfig{
 		"s1" : {ts.URL, TestUser, TestPass},
+		"s2" : {ts.URL, TestUser, TestPass},
 	})
 	hosts, err2 := Api.ScheduleHostDowntime("t1-host1", Downtime{
 		Flexible:      false,
@@ -176,9 +177,14 @@ func TestProxy_ScheduleHostDowntime_NoHost(t *testing.T) {
 		End:           time.Now().Add(time.Hour),
 		Duration:      0,
 		NoAllServices: false,
+		Author: "testAuthor",
+		Comment: "testComment",
 	})
 	t.Run("parse input", func(t *testing.T) {
 		assert.Nil(t, err1)
 		assert.Error(t, err2)
+		assert.Contains(t,ts.reqBody,`"author":"testAuthor"`)
+		assert.Contains(t,ts.reqBody,`"comment":"testComment"`)
+		assert.Contains(t,ts.reqBody,`"filter":"match(\"t1-host1\", host.name)"`)
 	})
 }

@@ -159,10 +159,10 @@ func (a *Proxy) ScheduleHostDowntimeByFilter(filter string, downtime Downtime) (
 	var wg sync.WaitGroup
 	for k, v := range a.servers {
 		wg.Add(1)
-		func(k string) {
-			res[k], errs[k]  = v.ScheduleHostDowntimeByFilter(filter,downtime)
+		func(k string, s *API) {
+			res[k], errs[k]  = s.ScheduleHostDowntimeByFilter(filter,downtime)
 			wg.Done()
-		}(k)
+		}(k,v)
 	}
 	wg.Wait()
 	downtimeMap := make(map[string]bool)
@@ -184,7 +184,7 @@ func (a *Proxy) ScheduleHostDowntimeByFilter(filter string, downtime Downtime) (
 	}
 	// TODO figure out how to signal that. Err handler for logging ?
 	if errOut {
-		return out, fmt.Errorf("error: [%+v]", errs)
+		return out, fmt.Errorf("[%+v]",errs)
 	} else {
 		return out, nil
 	}

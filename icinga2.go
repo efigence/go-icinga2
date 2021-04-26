@@ -56,6 +56,7 @@ func (a *API) GetHostsByFilter(filter string) (m []monitoring.Host, err error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {return m, err}
+	defer resp.Body.Close()
 	var i Icinga2APIResponse
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {return m, err}
@@ -85,6 +86,7 @@ func (a *API) GetServicesByFilter(filter string) (m []monitoring.Service, err er
 	}
 	resp, err := client.Do(req)
 	if err != nil {return m, err}
+	defer resp.Body.Close()
 	var i Icinga2APIResponse
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {return m, err}
@@ -163,6 +165,7 @@ func (a *API) ScheduleHostDowntimeByFilter(filter string, downtime Downtime) (do
 	}
 	resp, err := client.Do(req)
 	if err != nil {return downtimedHosts,err}
+	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {return downtimedHosts,err}
 	var i Icinga2StatusResponseOk
