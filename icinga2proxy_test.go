@@ -9,10 +9,12 @@ import (
 
 
 
-func TestProxy_GetHosts(t *testing.T) {
+func TestProxy_GetHosts_Single(t *testing.T) {
 	log = testLogger{}
 	ts := testServer(t, "/v1/objects/Hosts", "v1.objects.hosts.json")
-	Api, err1 := New(ts.URL, TestUser, TestPass)
+	Api, err1 := NewProxy(map[string]Icinga2ServerConfig{
+		"s1" : {ts.URL, TestUser, TestPass},
+	})
 	hosts, err2 := Api.GetHosts()
 	t.Run("parse input", func(t *testing.T) {
 		assert.Nil(t, err1)
@@ -30,8 +32,39 @@ func TestProxy_GetHosts(t *testing.T) {
 		assert.Equal(t, monitoring.HostUp, int(v["t1-host1"].State))
 		assert.Equal(t, "t1-host1", v["t1-host1"].DisplayName)
 	})
-
 }
+
+func TestProxy_GetHosts_Dedup(t *testing.T) {
+	log = testLogger{}
+	ts := testServer(t, "/v1/objects/Hosts", "v1.objects.hosts.json")
+	ts2 := testServer(t, "/v1/objects/Hosts", "v1.objects.hosts_dedup.json")
+	Api, err1 := NewProxy(map[string]Icinga2ServerConfig{
+		"s1" : {ts.URL, TestUser, TestPass},
+		"s2" : {ts2.URL, TestUser, TestPass},
+	})
+	hosts, err2 := Api.GetHosts()
+	t.Run("parse input", func(t *testing.T) {
+		assert.Nil(t, err1)
+		assert.Nil(t, err2)
+
+	})
+	t.Run("length", func(t *testing.T) {
+		assert.Len(t, hosts, 14)
+	})
+	v := make(map[string]monitoring.Host, 0)
+	for _, h := range hosts {
+		v[h.Host] = h
+	}
+	t.Run("duped host data", func(t *testing.T) {
+		assert.Equal(t, monitoring.HostUp, int(v["t1-host1_s1"].State))
+		assert.Equal(t, "t1-host1", v["t1-host1_s1"].DisplayName)
+	})
+	t.Run("single host data", func(t *testing.T) {
+		assert.Equal(t, monitoring.HostUp, int(v["t2-lb1"].State))
+		assert.Equal(t, "t2-lb1", v["t2-lb1"].DisplayName)
+	})
+}
+
 
 func TestProxy_GetServices_Single(t *testing.T) {
 	log = testLogger{}
