@@ -2,7 +2,6 @@ package icinga2
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/efigence/go-monitoring"
 	"strings"
 	"time"
@@ -165,7 +164,7 @@ func (i *Icinga2StatusResponseOk) GetDowntimeList() []string {
 			parts := strings.SplitN(obj.Name, "!", 2)
 			objects = append(objects, parts[0])
 		} else {
-			fmt.Printf("%+v\n", obj)
+			// TODO handle somehow ?
 		}
 	}
 	return objects
